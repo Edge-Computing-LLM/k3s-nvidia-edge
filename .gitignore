@@ -1,0 +1,58 @@
+# Build outputs
+bin/
+dist/
+build/
+out/
+*.exe
+*.test
+*.prof
+*.cover
+coverage.out
+coverage.html
+
+# Go workspace/cache files
+go.work
+go.work.sum
+
+# Local runtime output
+*.log
+*.tmp
+tmp/
+.cache/
+
+# Local Kubernetes and generated operational artifacts
+kubeconfig*
+*.kubeconfig
+*.yaml.generated
+*.manifest
+evidence/
+reports/
+
+# Secrets and environment overrides
+.env
+.env.*
+!.env.example
+!*example*
+*.pem
+*.key
+*.crt
+*.token
+*.secret
+*credentials*
+
+# Editor and OS files
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+
+# Local archives/packages
+*.tar
+*.tar.gz
+*.tgz
+*.zip
+*.deb
+*.rpm
