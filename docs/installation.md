@@ -23,8 +23,8 @@ The CLI also accepts systems where CUDA version metadata is available at:
 ## Build The CLI
 
 ```bash
-git clone https://github.com/Edge-Computing-LLM/k3s-nvidia-gpu.git
-cd k3s-nvidia-gpu
+git clone https://github.com/Edge-Computing-LLM/k3s-nvidia-edge.git
+cd k3s-nvidia-edge
 make check
 ```
 
@@ -57,10 +57,24 @@ Default values:
 ```text
 k3s channel: stable
 GPU Operator: v26.3.3
-CUDA test image: nvidia/cuda:12.8.0-base-ubuntu24.04
+CUDA test image: nvidia/cuda:12.8.1-base-ubuntu24.04
 minimum host CUDA: 12.8
 GPU Operator driver: disabled
 GPU Operator GFD: disabled
+```
+
+The direct upstream GPU Operator chart is the default. The repository also includes a local wrapper chart:
+
+```bash
+helm dependency update charts/k3s-nvidia-edge
+helm upgrade --install k3s-nvidia-edge charts/k3s-nvidia-edge \
+  -n gpu-operator --create-namespace --wait
+```
+
+Use it through the CLI with:
+
+```bash
+bin/k3s-nvidia-edge install --yes --use-local-chart
 ```
 
 ## Validate

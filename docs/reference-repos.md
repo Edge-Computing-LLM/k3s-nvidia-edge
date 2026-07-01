@@ -3,7 +3,7 @@
 This project was built from the local repositories under:
 
 ```text
-/media/waqasm86/External1/Project-Llamatelemetry/Project-Llamatelemetry-End-to-End/
+/media/waqasm86/External1/Waqas-Projects/
 ```
 
 ## Runtime Profile
@@ -45,6 +45,8 @@ The target profile is a single-node Ubuntu/Xubuntu 22+ edge workstation:
 The local `gpu-operator` repository includes a development chart, but the working machine is running released chart `gpu-operator-v26.3.3`. The CLI therefore installs the released NVIDIA Helm chart by default and uses local source repositories as implementation references.
 
 This is safer for a workstation than installing `main-latest` development manifests from a source tree.
+
+The repository also includes `charts/k3s-nvidia-edge`, a wrapper chart that pins the released GPU Operator dependency and version-controls the k3s-specific values.
 
 ## Archived NVIDIA Tool Handling
 

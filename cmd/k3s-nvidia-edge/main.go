@@ -7,7 +7,7 @@ import (
 	"os"
 	"strings"
 
-	"github.com/waqasm86/k3s-nvidia-gpu-edge-setup/internal/edge"
+	"github.com/Edge-Computing-LLM/k3s-nvidia-edge/internal/edge"
 )
 
 const usage = `k3s-nvidia-edge is an Ubuntu 22+ CLI for local k3s + NVIDIA GPU setup.
@@ -63,6 +63,8 @@ func main() {
 	fs.BoolVar(&opts.SkipK3sInstall, "skip-k3s-install", false, "with install: skip k3s install command")
 	fs.BoolVar(&opts.SkipGPUOperatorInstall, "skip-gpu-operator-install", false, "with install: skip GPU Operator install")
 	fs.BoolVar(&opts.DriverEnabled, "operator-driver-enabled", false, "install GPU Operator driver component instead of using host driver")
+	fs.BoolVar(&opts.UseLocalChart, "use-local-chart", false, "with install/cleanup: install the bundled Helm chart instead of the upstream chart directly")
+	fs.StringVar(&opts.LocalChartPath, "local-chart", opts.LocalChartPath, "path to bundled k3s-nvidia-edge Helm chart")
 	fs.StringVar(&opts.K3sChannel, "k3s-channel", opts.K3sChannel, "k3s install channel")
 	fs.StringVar(&opts.K3sExec, "k3s-exec", opts.K3sExec, "INSTALL_K3S_EXEC value")
 

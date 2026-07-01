@@ -83,7 +83,7 @@ func Validate(ctx context.Context, r *Runner, opts Options) error {
 kubectl apply -f - <<'EOF'
 %s
 EOF
-kubectl wait --for=condition=Ready pod/cuda-test --timeout=180s
+kubectl wait --for=jsonpath='{.status.phase}'=Succeeded pod/cuda-test --timeout=180s
 kubectl logs cuda-test
 kubectl delete pod cuda-test`, CUDATestManifest(opts.CUDATestImage)),
 	})
@@ -191,10 +191,39 @@ chmod 600 "$HOME/.kube/config"`},
 		if !opts.DisableGFD {
 			gfd = "true"
 		}
-		steps = append(steps, Step{
-			Name:     "install or upgrade GPU Operator",
+		steps = append(steps, GPUOperatorInstallStep(opts, gfd))
+	}
+	steps = append(steps,
+		Step{Name: "wait for GPU Operator pods", Command: GPUOperatorReadyCheck(), Mutating: false},
+		Step{Name: "verify GPU capacity", Command: GPUCapacityCheck(), Mutating: false},
+	)
+	return steps
+}
+
+func GPUOperatorInstallStep(opts Options, gfd string) Step {
+	if opts.UseLocalChart {
+		return Step{
+			Name:     "install or upgrade k3s NVIDIA edge Helm chart",
 			Mutating: true,
-			Command: fmt.Sprintf(`helm upgrade --install gpu-operator nvidia/gpu-operator \
+			Command: fmt.Sprintf(`helm dependency update %s
+helm upgrade --install k3s-nvidia-edge %s \
+  -n gpu-operator --create-namespace \
+  --set gpu-operator.driver.enabled=%t \
+  --set gpu-operator.toolkit.enabled=true \
+  --set gpu-operator.gfd.enabled=%s \
+  --set gpu-operator.toolkit.env[0].name=CONTAINERD_CONFIG \
+  --set gpu-operator.toolkit.env[0].value=/var/lib/rancher/k3s/agent/etc/containerd/config.toml \
+  --set gpu-operator.toolkit.env[1].name=CONTAINERD_SOCKET \
+  --set gpu-operator.toolkit.env[1].value=/run/k3s/containerd/containerd.sock \
+  --set gpu-operator.toolkit.env[2].name=RUNTIME_CONFIG_SOURCE \
+  --set-string gpu-operator.toolkit.env[2].value=file=/var/lib/rancher/k3s/agent/etc/containerd/config.toml \
+  --wait`, shellQuote(opts.LocalChartPath), shellQuote(opts.LocalChartPath), opts.DriverEnabled, gfd),
+		}
+	}
+	return Step{
+		Name:     "install or upgrade GPU Operator",
+		Mutating: true,
+		Command: fmt.Sprintf(`helm upgrade --install gpu-operator nvidia/gpu-operator \
   -n gpu-operator --create-namespace \
   --version %s \
   --set driver.enabled=%t \
@@ -205,15 +234,9 @@ chmod 600 "$HOME/.kube/config"`},
   --set toolkit.env[1].name=CONTAINERD_SOCKET \
   --set toolkit.env[1].value=/run/k3s/containerd/containerd.sock \
   --set toolkit.env[2].name=RUNTIME_CONFIG_SOURCE \
-  --set toolkit.env[2].value=file=/var/lib/rancher/k3s/agent/etc/containerd/config.toml \
+  --set-string toolkit.env[2].value=file=/var/lib/rancher/k3s/agent/etc/containerd/config.toml \
   --wait`, opts.GPUOperatorVersion, opts.DriverEnabled, gfd),
-		})
 	}
-	steps = append(steps,
-		Step{Name: "wait for GPU Operator pods", Command: GPUOperatorReadyCheck(), Mutating: false},
-		Step{Name: "verify GPU capacity", Command: GPUCapacityCheck(), Mutating: false},
-	)
-	return steps
 }
 
 func CleanupLegacySteps(opts Options) []Step {
@@ -221,10 +244,14 @@ func CleanupLegacySteps(opts Options) []Step {
 		{Name: "remove superseded NVIDIA packages", Host: true, Mutating: true, Command: "apt-get remove -y nvidia-container-runtime nvidia-docker2 nvidia-docker || true"},
 	}
 	if opts.DisableGFD {
+		command := fmt.Sprintf("helm upgrade gpu-operator nvidia/gpu-operator -n gpu-operator --version %s --reuse-values --set gfd.enabled=false --wait", opts.GPUOperatorVersion)
+		if opts.UseLocalChart {
+			command = fmt.Sprintf("helm dependency update %s && helm upgrade k3s-nvidia-edge %s -n gpu-operator --reuse-values --set gpu-operator.gfd.enabled=false --wait", shellQuote(opts.LocalChartPath), shellQuote(opts.LocalChartPath))
+		}
 		steps = append(steps, Step{
 			Name:     "disable GPU Feature Discovery in GPU Operator",
 			Mutating: true,
-			Command:  fmt.Sprintf("helm upgrade gpu-operator nvidia/gpu-operator -n gpu-operator --version %s --reuse-values --set gfd.enabled=false --wait", opts.GPUOperatorVersion),
+			Command:  command,
 		})
 	}
 	steps = append(steps,

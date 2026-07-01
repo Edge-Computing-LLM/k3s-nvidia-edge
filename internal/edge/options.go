@@ -15,6 +15,8 @@ type Options struct {
 	SkipK3sInstall         bool
 	SkipGPUOperatorInstall bool
 	DriverEnabled          bool
+	UseLocalChart          bool
+	LocalChartPath         string
 	K3sChannel             string
 	K3sExec                string
 }
@@ -22,15 +24,17 @@ type Options struct {
 func DefaultOptions() Options {
 	return Options{
 		Sudo:                   true,
-		ReferenceRoot:          "/media/waqasm86/External1/Project-Llamatelemetry/Project-Llamatelemetry-End-to-End",
+		ReferenceRoot:          "/media/waqasm86/External1/Waqas-Projects",
 		GPUOperatorVersion:     "v26.3.3",
-		CUDATestImage:          "nvidia/cuda:12.8.0-base-ubuntu24.04",
+		CUDATestImage:          "nvidia/cuda:12.8.1-base-ubuntu24.04",
 		MinCUDAVersion:         "12.8",
 		RequireHostCUDA:        true,
 		DisableGFD:             true,
 		DriverEnabled:          false,
+		UseLocalChart:          false,
+		LocalChartPath:         "./charts/k3s-nvidia-edge",
 		K3sChannel:             "stable",
-		K3sExec:                "server --write-kubeconfig-mode 644",
+		K3sExec:                "server --write-kubeconfig-mode 0644 --disable traefik --disable servicelb --disable metrics-server --node-label gpu=nvidia --node-label workload=edge-ai",
 		SkipToolkitInstall:     false,
 		SkipK3sInstall:         false,
 		SkipGPUOperatorInstall: false,

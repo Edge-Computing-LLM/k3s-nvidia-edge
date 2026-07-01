@@ -1,0 +1,43 @@
+gpu-operator:
+  enabled: true
+
+  driver:
+    enabled: false
+
+  toolkit:
+    enabled: true
+    env:
+      - name: CONTAINERD_CONFIG
+        value: /var/lib/rancher/k3s/agent/etc/containerd/config.toml
+      - name: CONTAINERD_SOCKET
+        value: /run/k3s/containerd/containerd.sock
+      - name: RUNTIME_CONFIG_SOURCE
+        value: file=/var/lib/rancher/k3s/agent/etc/containerd/config.toml
+
+  cdi:
+    enabled: true
+
+  devicePlugin:
+    enabled: true
+
+  dcgmExporter:
+    enabled: true
+
+  gfd:
+    enabled: false
+
+  nfd:
+    enabled: true
+    nodefeaturerules: false
+
+  operator:
+    runtimeClass: nvidia
+
+  mig:
+    strategy: single
+
+  sandboxWorkloads:
+    enabled: false
+
+  nodeStatusExporter:
+    enabled: false

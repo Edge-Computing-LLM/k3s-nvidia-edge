@@ -1,6 +1,6 @@
 # K3S NVIDIA GPU Edge Setup
 
-`k3s-nvidia-edge` is a Go CLI for installing, configuring, validating, and cleaning up a local Ubuntu 22+ k3s cluster with NVIDIA GPU support and CUDA Toolkit 12.8+.
+`k3s-nvidia-edge` is a Go CLI and Helm profile for installing, configuring, validating, and cleaning up a local Ubuntu 22+ k3s cluster with NVIDIA GPU support and CUDA Toolkit 12.8+.
 
 ## Documentation
 
@@ -11,6 +11,7 @@
 - [Troubleshooting](docs/troubleshooting.md)
 - [Reference repository analysis](docs/reference-repos.md)
 - [Example edge profile](configs/edge-profile.env.example)
+- [Bundled Helm chart](charts/k3s-nvidia-edge/README.md)
 - [Contributing](CONTRIBUTING.md)
 - [Security](SECURITY.md)
 
@@ -25,6 +26,7 @@ The default profile matches the working local Xubuntu 24 setup:
 - GPU Operator `toolkit.enabled=true`
 - GPU Operator `gfd.enabled=false`
 - CUDA validation with an `nvidia-smi` pod
+- optional local wrapper Helm chart at `charts/k3s-nvidia-edge`
 
 ## Build
 
@@ -75,8 +77,10 @@ Important production flags:
 --min-cuda-version 12.8
 --require-host-cuda=true
 --gpu-operator-version v26.3.3
---cuda-test-image nvidia/cuda:12.8.0-base-ubuntu24.04
+--cuda-test-image nvidia/cuda:12.8.1-base-ubuntu24.04
 --operator-driver-enabled=false
+--use-local-chart=false
+--local-chart ./charts/k3s-nvidia-edge
 ```
 
 ## End-To-End Install
@@ -97,6 +101,12 @@ This performs:
 8. NVIDIA Helm repo setup.
 9. GPU Operator install/upgrade.
 10. CUDA pod validation.
+
+To install through the bundled wrapper chart instead of installing `nvidia/gpu-operator` directly:
+
+```bash
+bin/k3s-nvidia-edge install --yes --use-local-chart
+```
 
 ## Existing k3s Cluster Cleanup
 
@@ -141,7 +151,7 @@ spec:
     nvidia.com/gpu.present: "true"
   containers:
   - name: cuda-test
-    image: nvidia/cuda:12.8.0-base-ubuntu24.04
+    image: nvidia/cuda:12.8.1-base-ubuntu24.04
     command: ["nvidia-smi"]
     resources:
       limits:
@@ -155,10 +165,10 @@ The pod is deleted after logs are printed.
 The CLI was built against the local reference repositories under:
 
 ```text
-/media/waqasm86/External1/Project-Llamatelemetry/Project-Llamatelemetry-End-to-End/Kubernetes-sigs/
-/media/waqasm86/External1/Project-Llamatelemetry/Project-Llamatelemetry-End-to-End/Project-CoreDNS/
-/media/waqasm86/External1/Project-Llamatelemetry/Project-Llamatelemetry-End-to-End/Project-Rancher-K3S/
-/media/waqasm86/External1/Project-Llamatelemetry/Project-Llamatelemetry-End-to-End/Project-Nvidia/
+/media/waqasm86/External1/Waqas-Projects/Kubernetes-sigs/
+/media/waqasm86/External1/Waqas-Projects/Project-CoreDNS/
+/media/waqasm86/External1/Waqas-Projects/Project-Rancher-K3S/
+/media/waqasm86/External1/Waqas-Projects/Project-Nvidia/
 ```
 
 Main tool mapping:

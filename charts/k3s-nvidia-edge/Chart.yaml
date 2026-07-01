@@ -1,0 +1,17 @@
+apiVersion: v2
+name: k3s-nvidia-edge
+description: Local k3s NVIDIA GPU Operator profile for Ubuntu/Xubuntu edge nodes
+type: application
+version: 0.1.0
+appVersion: "0.1.0"
+kubeVersion: ">=1.26.0-0"
+home: https://github.com/Edge-Computing-LLM/k3s-nvidia-edge
+sources:
+  - https://github.com/Edge-Computing-LLM/k3s-nvidia-edge
+  - https://github.com/NVIDIA/gpu-operator
+  - https://github.com/kubernetes-sigs/node-feature-discovery
+dependencies:
+  - name: gpu-operator
+    version: v26.3.3
+    repository: https://helm.ngc.nvidia.com/nvidia
+    condition: gpu-operator.enabled

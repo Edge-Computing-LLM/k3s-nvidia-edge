@@ -48,6 +48,7 @@ Installs or configures:
 - kubeconfig for the invoking user
 - NVIDIA Helm repository
 - NVIDIA GPU Operator
+- optional bundled `charts/k3s-nvidia-edge` wrapper chart with `--use-local-chart`
 - CUDA validation pod
 
 ## status
@@ -73,6 +74,7 @@ bin/k3s-nvidia-edge validate --yes
 ```
 
 Creates a short-lived CUDA pod, prints `nvidia-smi`, and deletes the pod.
+The command waits for pod phase `Succeeded`, which is more reliable for one-shot validation pods than waiting for a long-lived Ready condition.
 
 ## cleanup-legacy
 

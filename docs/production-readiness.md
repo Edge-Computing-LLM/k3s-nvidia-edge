@@ -14,7 +14,8 @@ This CLI targets a local edge GPU workstation running Ubuntu/Xubuntu 22.04 or ne
 | GPU Operator driver | `driver.enabled=false` |
 | GPU Operator toolkit | `toolkit.enabled=true` |
 | GPU Feature Discovery | `gfd.enabled=false` |
-| GPU validation | `nvidia/cuda:12.8.0-base-ubuntu24.04` `nvidia-smi` pod |
+| GPU validation | `nvidia/cuda:12.8.1-base-ubuntu24.04` `nvidia-smi` pod |
+| Helm packaging | direct `nvidia/gpu-operator` install by default; bundled wrapper chart available |
 
 ## Preflight Gates
 
@@ -42,6 +43,12 @@ Then execute:
 
 ```bash
 bin/k3s-nvidia-edge install --yes
+```
+
+For environments that want all Helm values versioned in this repository:
+
+```bash
+bin/k3s-nvidia-edge install --yes --use-local-chart
 ```
 
 ## Existing Cluster Hardening

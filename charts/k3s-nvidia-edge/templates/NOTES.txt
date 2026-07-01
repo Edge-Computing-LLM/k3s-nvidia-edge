@@ -1,0 +1,9 @@
+k3s-nvidia-edge installed NVIDIA GPU Operator with the local k3s edge profile.
+
+Check release state:
+  helm list -n {{ .Release.Namespace }}
+  kubectl get pods -n {{ .Release.Namespace }}
+  kubectl get clusterpolicy cluster-policy
+
+Validate GPU scheduling:
+  k3s-nvidia-edge validate --yes

@@ -51,6 +51,16 @@ For k3s, the toolkit env values should point to:
 /run/k3s/containerd/containerd.sock
 ```
 
+If your host changes networks and pods fail with `connect: no route to host` when reaching `10.43.0.1:443`, compare these values:
+
+```bash
+ip -4 route get 1.1.1.1
+kubectl get endpoints kubernetes -n default -o yaml
+kubectl get node -o wide
+```
+
+Pin `node-ip` in `/etc/rancher/k3s/config.yaml` when the machine regularly moves between interfaces.
+
 ## Validation Pod Stuck
 
 Check:
