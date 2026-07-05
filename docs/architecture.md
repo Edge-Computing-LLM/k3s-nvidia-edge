@@ -26,15 +26,14 @@ Ubuntu/Xubuntu 22+
           `-- validator jobs/pods
 ```
 
-The repository vendors local Helm chart sources for the k3s baseline components and standalone Node Feature Discovery:
+The repository intentionally vendors only the local wrapper chart and the released GPU Operator dependency archive:
 
 ```text
-charts/coredns-k3s
-charts/local-path-provisioner
-charts/node-feature-discovery
+charts/k3s-nvidia-edge
+charts/k3s-nvidia-edge/charts/gpu-operator-v26.3.3.tgz
 ```
 
-Those charts are dependencies of the local wrapper chart but are disabled by default. The live k3s cluster owns CoreDNS and local-path-provisioner, and the GPU Operator chart owns the active NFD deployment.
+CoreDNS and local-path-provisioner are not vendored here because k3s already deploys and owns them in `kube-system`. Standalone Node Feature Discovery is not vendored because the GPU Operator chart deploys the active NFD components needed by the NVIDIA profile.
 
 ## Default GPU Policy
 

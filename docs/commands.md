@@ -126,12 +126,9 @@ Inventories the local reference repositories used while designing the CLI.
 bin/k3s-nvidia-edge charts
 ```
 
-Verifies that the bundled chart sources and packaged dependencies are present and renderable:
+Verifies that the bundled wrapper chart and packaged GPU Operator dependency are present and renderable:
 
 - `charts/k3s-nvidia-edge`
-- `charts/coredns-k3s`
-- `charts/local-path-provisioner`
-- `charts/node-feature-discovery`
 - `charts/k3s-nvidia-edge/charts/gpu-operator-v26.3.3.tgz`
 
 ## print-commands

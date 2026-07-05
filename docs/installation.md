@@ -77,13 +77,7 @@ Use it through the CLI with:
 bin/k3s-nvidia-edge install --yes --use-local-chart
 ```
 
-The repository carries local chart sources for:
-
-- `charts/coredns-k3s`
-- `charts/local-path-provisioner`
-- `charts/node-feature-discovery`
-
-These are disabled by default in the wrapper chart because k3s already owns CoreDNS and local-path-provisioner, and GPU Operator already deploys its own NFD dependency. Verify chart availability with:
+The repository carries only the wrapper chart and the packaged GPU Operator dependency required by the local NVIDIA profile. k3s already owns CoreDNS and local-path-provisioner, and GPU Operator deploys its own NFD dependency. Verify chart availability with:
 
 ```bash
 bin/k3s-nvidia-edge charts

@@ -74,14 +74,20 @@ func TestBundledChartsStepChecksAllCharts(t *testing.T) {
 
 	for _, want := range []string{
 		"charts/k3s-nvidia-edge/Chart.yaml",
-		"charts/coredns-k3s/Chart.yaml",
-		"charts/local-path-provisioner/Chart.yaml",
-		"charts/node-feature-discovery/Chart.yaml",
 		"gpu-operator-v26.3.3.tgz",
 		"helm dependency list './charts/k3s-nvidia-edge'",
 	} {
 		if !contains(step.Command, want) {
 			t.Fatalf("bundled chart check missing %q", want)
+		}
+	}
+	for _, duplicate := range []string{
+		"charts/coredns-k3s/Chart.yaml",
+		"charts/local-path-provisioner/Chart.yaml",
+		"charts/node-feature-discovery/Chart.yaml",
+	} {
+		if contains(step.Command, duplicate) {
+			t.Fatalf("bundled chart check should not require duplicate chart %q", duplicate)
 		}
 	}
 }

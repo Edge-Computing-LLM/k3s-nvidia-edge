@@ -29,8 +29,8 @@ The target profile is a single-node Ubuntu/Xubuntu 22+ edge workstation:
 | `Project-Rancher-K3S/k3s` | `https://github.com/k3s-io/k3s.git` | Yes | Lightweight Kubernetes distribution. Bundles containerd, CoreDNS, local-path-provisioner, flannel, and core control-plane behavior. |
 | `Project-Rancher-K3S/local-path-provisioner` | `https://github.com/rancher/local-path-provisioner.git` | Yes | k3s default dynamic local storage provisioner. |
 | `Project-CoreDNS/coredns` | `https://github.com/coredns/coredns.git` | Yes | Cluster DNS component used by k3s as kube-dns/CoreDNS. |
-| `Kubernetes-sigs/node-feature-discovery` | `https://github.com/kubernetes-sigs/node-feature-discovery.git` | Yes | Deployed by GPU Operator chart for generic hardware and kernel feature labels. |
-| `Kubernetes-sigs/dra-driver-nvidia-gpu` | `https://github.com/kubernetes-sigs/dra-driver-nvidia-gpu.git` | Optional/Future | DRA path for Kubernetes 1.32+; not needed for this GeForce 940M profile. |
+| `Project-Kubernetes-Sigs/node-feature-discovery` | `https://github.com/kubernetes-sigs/node-feature-discovery.git` | Yes | Deployed by GPU Operator chart for generic hardware and kernel feature labels. |
+| `Project-Kubernetes-Sigs/dra-driver-nvidia-gpu` | `https://github.com/kubernetes-sigs/dra-driver-nvidia-gpu.git` | Optional/Future | DRA path for Kubernetes 1.32+; not needed for this GeForce 940M profile. |
 | `Project-Nvidia/gpu-operator` | `https://github.com/NVIDIA/gpu-operator.git` | Yes | Helm/operator control plane for NVIDIA GPU Kubernetes components. |
 | `Project-Nvidia/k8s-device-plugin` | `https://github.com/NVIDIA/k8s-device-plugin.git` | Yes | Exposes `nvidia.com/gpu`; also contains current integrated GPU Feature Discovery implementation. |
 | `Project-Nvidia/nvidia-container-toolkit` | `https://github.com/NVIDIA/nvidia-container-toolkit.git` | Yes | Configures containerd/runtime integration for NVIDIA GPUs. |
@@ -39,6 +39,7 @@ The target profile is a single-node Ubuntu/Xubuntu 22+ edge workstation:
 | `Project-Nvidia/DCGM` | `https://github.com/NVIDIA/DCGM.git` | Indirect | GPU management/monitoring library used by DCGM Exporter. |
 | `Project-Nvidia/go-dcgm` | `https://github.com/NVIDIA/go-dcgm.git` | Indirect | Go bindings used in DCGM-related tooling. |
 | `Project-Nvidia/cuda-samples` | `https://github.com/NVIDIA/cuda-samples.git` | Validation reference | CUDA sample source; not required by the installer. |
+| `Project-Cloudflare/cloudflared` | `https://github.com/cloudflare/cloudflared.git` | Optional | Local tunnel path for exposing DCGM or observability endpoints during validation. |
 
 ## Why The CLI Uses Helm GPU Operator
 
@@ -46,7 +47,7 @@ The local `gpu-operator` repository includes a development chart, but the workin
 
 This is safer for a workstation than installing `main-latest` development manifests from a source tree.
 
-The repository also includes `charts/k3s-nvidia-edge`, a wrapper chart that pins the released GPU Operator dependency and version-controls the k3s-specific values. Its dependency set includes local chart sources for k3s-aligned CoreDNS, local-path-provisioner, and standalone Node Feature Discovery. Those local dependencies are disabled by default because the live cluster already receives CoreDNS/local-path from k3s and NFD from the GPU Operator chart.
+The repository also includes `charts/k3s-nvidia-edge`, a wrapper chart that pins the released GPU Operator dependency and version-controls the k3s-specific values. It intentionally does not vendor CoreDNS, local-path-provisioner, or standalone Node Feature Discovery charts because the live cluster already receives CoreDNS/local-path from k3s and NFD from the GPU Operator chart.
 
 ## Archived NVIDIA Tool Handling
 

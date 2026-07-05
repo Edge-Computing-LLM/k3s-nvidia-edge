@@ -117,7 +117,7 @@ func Uninstall(ctx context.Context, r *Runner, opts Options) error {
 
 func Repos(ctx context.Context, r *Runner, opts Options) error {
 	root := opts.ReferenceRoot
-	command := fmt.Sprintf(`for d in %s/Kubernetes-sigs/* %s/Project-CoreDNS/* %s/Project-Rancher-K3S/* %s/Project-Nvidia/*; do
+	command := fmt.Sprintf(`for d in %s/Project-Kubernetes-Sigs/* %s/Project-CoreDNS/* %s/Project-Rancher-K3S/* %s/Project-Nvidia/* %s/Project-Cloudflare/*; do
   [ -d "$d/.git" ] || continue
   printf 'repo: %%s\n' "$d"
   printf 'origin: '; git -C "$d" remote get-url origin || true
@@ -126,7 +126,7 @@ func Repos(ctx context.Context, r *Runner, opts Options) error {
   printf 'go modules: '; find "$d" -maxdepth 3 -name go.mod | wc -l
   printf 'helm charts: '; find "$d" -maxdepth 5 -name Chart.yaml | wc -l
   printf '\n'
-done`, shellQuote(root), shellQuote(root), shellQuote(root), shellQuote(root))
+done`, shellQuote(root), shellQuote(root), shellQuote(root), shellQuote(root), shellQuote(root))
 	return r.Run(ctx, Step{Name: "local reference repo inventory", Command: command})
 }
 
@@ -209,24 +209,18 @@ chmod 600 "$HOME/.kube/config"`},
 }
 
 func BundledChartsStep(opts Options) Step {
-	chartRoot := filepath.Clean(filepath.Join(opts.LocalChartPath, ".."))
 	paths := []string{
 		opts.LocalChartPath,
-		filepath.Join(chartRoot, "coredns-k3s"),
-		filepath.Join(chartRoot, "local-path-provisioner"),
-		filepath.Join(chartRoot, "node-feature-discovery"),
 		filepath.Join(opts.LocalChartPath, "charts", "gpu-operator-"+opts.GPUOperatorVersion+".tgz"),
 	}
 
 	var checks []string
 	checks = append(checks, "set -euo pipefail")
 	checks = append(checks, "command -v helm >/dev/null")
-	for _, path := range paths[:4] {
-		checks = append(checks, fmt.Sprintf("test -f %s", shellQuote(filepath.Join(path, "Chart.yaml"))))
-		checks = append(checks, fmt.Sprintf("helm lint %s >/dev/null", shellQuote(path)))
-	}
-	checks = append(checks, fmt.Sprintf("test -f %s", shellQuote(paths[4])))
-	checks = append(checks, fmt.Sprintf("tar -tzf %s >/dev/null", shellQuote(paths[4])))
+	checks = append(checks, fmt.Sprintf("test -f %s", shellQuote(filepath.Join(paths[0], "Chart.yaml"))))
+	checks = append(checks, fmt.Sprintf("helm lint %s >/dev/null", shellQuote(paths[0])))
+	checks = append(checks, fmt.Sprintf("test -f %s", shellQuote(paths[1])))
+	checks = append(checks, fmt.Sprintf("tar -tzf %s >/dev/null", shellQuote(paths[1])))
 	checks = append(checks, fmt.Sprintf("helm dependency list %s", shellQuote(opts.LocalChartPath)))
 	return Step{
 		Name:    "verify bundled Helm charts",
@@ -300,13 +294,14 @@ func LocalRepoPaths(root string) []string {
 		filepath.Join(root, "Project-Rancher-K3S", "k3s"),
 		filepath.Join(root, "Project-Rancher-K3S", "local-path-provisioner"),
 		filepath.Join(root, "Project-CoreDNS", "coredns"),
-		filepath.Join(root, "Kubernetes-sigs", "node-feature-discovery"),
-		filepath.Join(root, "Kubernetes-sigs", "dra-driver-nvidia-gpu"),
+		filepath.Join(root, "Project-Kubernetes-Sigs", "node-feature-discovery"),
+		filepath.Join(root, "Project-Kubernetes-Sigs", "dra-driver-nvidia-gpu"),
 		filepath.Join(root, "Project-Nvidia", "gpu-operator"),
 		filepath.Join(root, "Project-Nvidia", "k8s-device-plugin"),
 		filepath.Join(root, "Project-Nvidia", "nvidia-container-toolkit"),
 		filepath.Join(root, "Project-Nvidia", "libnvidia-container"),
 		filepath.Join(root, "Project-Nvidia", "dcgm-exporter"),
 		filepath.Join(root, "Project-Nvidia", "DCGM"),
+		filepath.Join(root, "Project-Cloudflare", "cloudflared"),
 	}
 }

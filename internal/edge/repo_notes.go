@@ -18,4 +18,5 @@ var RepoNotes = []RepoNote{
 	{Name: "dcgm-exporter", Repo: "https://github.com/NVIDIA/dcgm-exporter", Purpose: "GPU metrics exporter deployed by GPU Operator"},
 	{Name: "DCGM", Repo: "https://github.com/NVIDIA/DCGM", Purpose: "NVIDIA GPU monitoring/management library used by dcgm-exporter"},
 	{Name: "dra-driver-nvidia-gpu", Repo: "https://github.com/kubernetes-sigs/dra-driver-nvidia-gpu", Purpose: "future/optional DRA path; not required for the GeForce/k3s default profile"},
+	{Name: "cloudflared", Repo: "https://github.com/cloudflare/cloudflared", Purpose: "optional local tunnel for exposing DCGM or observability endpoints during edge validation"},
 }
