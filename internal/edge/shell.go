@@ -46,17 +46,21 @@ echo "CUDA toolkit $version satisfies >= $min"`, shellQuote(minVersion))
 func GPUOperatorReadyCheck() string {
 	return `set -euo pipefail
 kubectl wait --for=condition=Ready pod -n gpu-operator -l app.kubernetes.io/component=gpu-operator --timeout=180s || true
-kubectl get pods -n gpu-operator
-bad="$(kubectl get pods -n gpu-operator --no-headers | awk '$3!="Running" && $3!="Completed" {print}')"
-if [ -n "$bad" ]; then
-  echo "$bad"
-  exit 1
-fi
-notready="$(kubectl get pods -n gpu-operator --no-headers | awk '$3=="Running" {split($2,a,"/"); if (a[1] != a[2]) print}')"
-if [ -n "$notready" ]; then
-  echo "$notready"
-  exit 1
-fi`
+deadline=$((SECONDS+300))
+while true; do
+  kubectl get pods -n gpu-operator
+  bad="$(kubectl get pods -n gpu-operator --no-headers | awk '$3!="Running" && $3!="Completed" {print}')"
+  notready="$(kubectl get pods -n gpu-operator --no-headers | awk '$3=="Running" {split($2,a,"/"); if (a[1] != a[2]) print}')"
+  if [ -z "$bad" ] && [ -z "$notready" ]; then
+    break
+  fi
+  if [ "$SECONDS" -ge "$deadline" ]; then
+    [ -z "$bad" ] || echo "$bad"
+    [ -z "$notready" ] || echo "$notready"
+    exit 1
+  fi
+  sleep 5
+done`
 }
 
 func GPUCapacityCheck() string {

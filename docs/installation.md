@@ -77,6 +77,24 @@ Use it through the CLI with:
 bin/k3s-nvidia-edge install --yes --use-local-chart
 ```
 
+The repository carries local chart sources for:
+
+- `charts/coredns-k3s`
+- `charts/local-path-provisioner`
+- `charts/node-feature-discovery`
+
+These are disabled by default in the wrapper chart because k3s already owns CoreDNS and local-path-provisioner, and GPU Operator already deploys its own NFD dependency. Verify chart availability with:
+
+```bash
+bin/k3s-nvidia-edge charts
+```
+
+On an already prepared local machine, deploy only the local Helm profile:
+
+```bash
+bin/k3s-nvidia-edge install --yes --sudo=false --use-local-chart --skip-base-package-install --skip-toolkit-install --skip-k3s-install
+```
+
 ## Validate
 
 ```bash

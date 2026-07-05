@@ -41,3 +41,20 @@ gpu-operator:
 
   nodeStatusExporter:
     enabled: false
+
+coredns-k3s:
+  enabled: false
+
+local-path-provisioner:
+  enabled: false
+  storageClass:
+    defaultClass: true
+    defaultVolumeType: local
+    volumeBindingMode: WaitForFirstConsumer
+  nodePathMap:
+    - node: DEFAULT_PATH_FOR_NON_LISTED_NODES
+      paths:
+        - /var/lib/rancher/k3s/storage
+
+node-feature-discovery:
+  enabled: false

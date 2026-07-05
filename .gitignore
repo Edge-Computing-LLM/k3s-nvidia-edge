@@ -56,3 +56,7 @@ Thumbs.db
 *.zip
 *.deb
 *.rpm
+
+# Vendored Helm chart dependencies required for offline/local chart installs
+!charts/k3s-nvidia-edge/charts/
+!charts/k3s-nvidia-edge/charts/*.tgz

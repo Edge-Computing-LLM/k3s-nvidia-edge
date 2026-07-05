@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"path/filepath"
+	"strings"
 )
 
 func Doctor(ctx context.Context, r *Runner, opts Options) error {
@@ -129,6 +130,10 @@ done`, shellQuote(root), shellQuote(root), shellQuote(root), shellQuote(root))
 	return r.Run(ctx, Step{Name: "local reference repo inventory", Command: command})
 }
 
+func Charts(ctx context.Context, r *Runner, opts Options) error {
+	return r.Run(ctx, BundledChartsStep(opts))
+}
+
 func PrintCommands(opts Options) {
 	fmt.Println("# Install steps")
 	for _, step := range InstallSteps(opts) {
@@ -144,12 +149,14 @@ func PrintCommands(opts Options) {
 
 func InstallSteps(opts Options) []Step {
 	var steps []Step
-	steps = append(steps, Step{
-		Name:     "install base packages",
-		Host:     true,
-		Mutating: true,
-		Command:  "apt-get update && apt-get install -y ca-certificates curl gnupg lsb-release jq apt-transport-https software-properties-common",
-	})
+	if !opts.SkipBasePackageInstall {
+		steps = append(steps, Step{
+			Name:     "install base packages",
+			Host:     true,
+			Mutating: true,
+			Command:  "apt-get update && apt-get install -y ca-certificates curl gnupg lsb-release jq apt-transport-https software-properties-common",
+		})
+	}
 	if !opts.SkipToolkitInstall {
 		steps = append(steps, Step{
 			Name:     "install NVIDIA Container Toolkit",
@@ -174,6 +181,7 @@ apt-get remove -y nvidia-container-runtime nvidia-docker2 nvidia-docker || true`
 	}
 	steps = append(steps,
 		Step{Name: "install Helm if missing", Host: true, Mutating: true, Command: "command -v helm >/dev/null 2>&1 || curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash"},
+		BundledChartsStep(opts),
 		Step{Name: "prepare kubeconfig", Mutating: true, Command: `set -euo pipefail
 mkdir -p "$HOME/.kube"
 if [ -r /etc/rancher/k3s/k3s.yaml ]; then
@@ -194,10 +202,36 @@ chmod 600 "$HOME/.kube/config"`},
 		steps = append(steps, GPUOperatorInstallStep(opts, gfd))
 	}
 	steps = append(steps,
-		Step{Name: "wait for GPU Operator pods", Command: GPUOperatorReadyCheck(), Mutating: false},
-		Step{Name: "verify GPU capacity", Command: GPUCapacityCheck(), Mutating: false},
+		Step{Name: "wait for GPU Operator pods", Command: GPUOperatorReadyCheck(), Mutating: true},
+		Step{Name: "verify GPU capacity", Command: GPUCapacityCheck(), Mutating: true},
 	)
 	return steps
+}
+
+func BundledChartsStep(opts Options) Step {
+	chartRoot := filepath.Clean(filepath.Join(opts.LocalChartPath, ".."))
+	paths := []string{
+		opts.LocalChartPath,
+		filepath.Join(chartRoot, "coredns-k3s"),
+		filepath.Join(chartRoot, "local-path-provisioner"),
+		filepath.Join(chartRoot, "node-feature-discovery"),
+		filepath.Join(opts.LocalChartPath, "charts", "gpu-operator-"+opts.GPUOperatorVersion+".tgz"),
+	}
+
+	var checks []string
+	checks = append(checks, "set -euo pipefail")
+	checks = append(checks, "command -v helm >/dev/null")
+	for _, path := range paths[:4] {
+		checks = append(checks, fmt.Sprintf("test -f %s", shellQuote(filepath.Join(path, "Chart.yaml"))))
+		checks = append(checks, fmt.Sprintf("helm lint %s >/dev/null", shellQuote(path)))
+	}
+	checks = append(checks, fmt.Sprintf("test -f %s", shellQuote(paths[4])))
+	checks = append(checks, fmt.Sprintf("tar -tzf %s >/dev/null", shellQuote(paths[4])))
+	checks = append(checks, fmt.Sprintf("helm dependency list %s", shellQuote(opts.LocalChartPath)))
+	return Step{
+		Name:    "verify bundled Helm charts",
+		Command: strings.Join(checks, "\n"),
+	}
 }
 
 func GPUOperatorInstallStep(opts Options, gfd string) Step {

@@ -27,6 +27,15 @@ func TestInstallStepsProductionDefaults(t *testing.T) {
 	}
 }
 
+func TestInstallStepsCanSkipBasePackages(t *testing.T) {
+	opts := DefaultOptions()
+	opts.SkipBasePackageInstall = true
+	all := joinStepCommands(InstallSteps(opts))
+	if contains(all, "apt-get install -y ca-certificates") {
+		t.Fatalf("base package install should be skipped")
+	}
+}
+
 func TestLocalChartInstallSteps(t *testing.T) {
 	opts := DefaultOptions()
 	opts.UseLocalChart = true
@@ -41,6 +50,38 @@ func TestLocalChartInstallSteps(t *testing.T) {
 	} {
 		if !contains(all, want) {
 			t.Fatalf("local chart install steps missing %q", want)
+		}
+	}
+}
+
+func TestInstallPostChecksAreDryRunSafe(t *testing.T) {
+	opts := DefaultOptions()
+	steps := InstallSteps(opts)
+
+	for _, step := range steps {
+		if step.Name != "wait for GPU Operator pods" && step.Name != "verify GPU capacity" {
+			continue
+		}
+		if !step.Mutating {
+			t.Fatalf("%s should be dry-run gated", step.Name)
+		}
+	}
+}
+
+func TestBundledChartsStepChecksAllCharts(t *testing.T) {
+	opts := DefaultOptions()
+	step := BundledChartsStep(opts)
+
+	for _, want := range []string{
+		"charts/k3s-nvidia-edge/Chart.yaml",
+		"charts/coredns-k3s/Chart.yaml",
+		"charts/local-path-provisioner/Chart.yaml",
+		"charts/node-feature-discovery/Chart.yaml",
+		"gpu-operator-v26.3.3.tgz",
+		"helm dependency list './charts/k3s-nvidia-edge'",
+	} {
+		if !contains(step.Command, want) {
+			t.Fatalf("bundled chart check missing %q", want)
 		}
 	}
 }

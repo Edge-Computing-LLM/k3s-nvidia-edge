@@ -26,6 +26,16 @@ Ubuntu/Xubuntu 22+
           `-- validator jobs/pods
 ```
 
+The repository vendors local Helm chart sources for the k3s baseline components and standalone Node Feature Discovery:
+
+```text
+charts/coredns-k3s
+charts/local-path-provisioner
+charts/node-feature-discovery
+```
+
+Those charts are dependencies of the local wrapper chart but are disabled by default. The live k3s cluster owns CoreDNS and local-path-provisioner, and the GPU Operator chart owns the active NFD deployment.
+
 ## Default GPU Policy
 
 The default GPU Operator profile is intentionally conservative for laptops and local edge machines:

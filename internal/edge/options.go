@@ -11,6 +11,7 @@ type Options struct {
 	RequireHostCUDA        bool
 	DisableGFD             bool
 	UninstallK3s           bool
+	SkipBasePackageInstall bool
 	SkipToolkitInstall     bool
 	SkipK3sInstall         bool
 	SkipGPUOperatorInstall bool
@@ -35,6 +36,7 @@ func DefaultOptions() Options {
 		LocalChartPath:         "./charts/k3s-nvidia-edge",
 		K3sChannel:             "stable",
 		K3sExec:                "server --write-kubeconfig-mode 0644 --disable traefik --disable servicelb --disable metrics-server --node-label gpu=nvidia --node-label workload=edge-ai",
+		SkipBasePackageInstall: false,
 		SkipToolkitInstall:     false,
 		SkipK3sInstall:         false,
 		SkipGPUOperatorInstall: false,

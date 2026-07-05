@@ -15,7 +15,7 @@ This CLI targets a local edge GPU workstation running Ubuntu/Xubuntu 22.04 or ne
 | GPU Operator toolkit | `toolkit.enabled=true` |
 | GPU Feature Discovery | `gfd.enabled=false` |
 | GPU validation | `nvidia/cuda:12.8.1-base-ubuntu24.04` `nvidia-smi` pod |
-| Helm packaging | direct `nvidia/gpu-operator` install by default; bundled wrapper chart available |
+| Helm packaging | direct `nvidia/gpu-operator` install by default; bundled wrapper chart and local dependency tarballs available |
 
 ## Preflight Gates
 
@@ -51,6 +51,12 @@ For environments that want all Helm values versioned in this repository:
 bin/k3s-nvidia-edge install --yes --use-local-chart
 ```
 
+For an already prepared Xubuntu/k3s/NVIDIA workstation, the tested local deployment path is:
+
+```bash
+bin/k3s-nvidia-edge install --yes --sudo=false --use-local-chart --skip-base-package-install --skip-toolkit-install --skip-k3s-install
+```
+
 ## Existing Cluster Hardening
 
 ```bash
@@ -79,7 +85,7 @@ The pod is deleted after logs are collected.
 - Keep `driver.enabled=false` for workstation/laptop systems where the NVIDIA display driver is managed by Ubuntu.
 - Use `--operator-driver-enabled=true` only on dedicated GPU worker nodes where GPU Operator should own driver lifecycle.
 - `RuntimeClass/nvidia-legacy` may be created by the current GPU Operator runtime setup. It is not the archived `nvidia-container-runtime` host package.
-- k3s uses embedded/containerized components such as CoreDNS and local-path-provisioner; the CLI does not rebuild those from source.
+- k3s uses embedded/containerized components such as CoreDNS and local-path-provisioner. The repo carries optional charts for traceability and local packaging, but they are disabled by default to avoid taking ownership from k3s.
 
 ## Failure Handling
 

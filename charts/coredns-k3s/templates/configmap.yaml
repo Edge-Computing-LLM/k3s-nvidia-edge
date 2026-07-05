@@ -1,0 +1,32 @@
+{{- if .Values.enabled }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: coredns
+  namespace: {{ include "coredns-k3s.namespace" . }}
+data:
+  Corefile: |
+    .:53 {
+        errors
+        health
+        ready
+        kubernetes {{ .Values.clusterDomain }} in-addr.arpa ip6.arpa {
+          pods insecure
+          fallthrough in-addr.arpa ip6.arpa
+        }
+        hosts /etc/coredns/NodeHosts {
+          ttl 60
+          reload 15s
+          fallthrough
+        }
+        prometheus :{{ .Values.service.metricsPort }}
+        cache 30
+        loop
+        reload
+        loadbalance
+        import /etc/coredns/custom/*.override
+        forward . /etc/resolv.conf
+    }
+    import /etc/coredns/custom/*.server
+  NodeHosts: ""
+{{- end }}

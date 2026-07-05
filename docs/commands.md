@@ -51,6 +51,12 @@ Installs or configures:
 - optional bundled `charts/k3s-nvidia-edge` wrapper chart with `--use-local-chart`
 - CUDA validation pod
 
+For an already prepared local workstation, skip host setup and deploy only through the local chart:
+
+```bash
+bin/k3s-nvidia-edge install --yes --sudo=false --use-local-chart --skip-base-package-install --skip-toolkit-install --skip-k3s-install
+```
+
 ## status
 
 ```bash
@@ -113,6 +119,20 @@ bin/k3s-nvidia-edge repos
 ```
 
 Inventories the local reference repositories used while designing the CLI.
+
+## charts
+
+```bash
+bin/k3s-nvidia-edge charts
+```
+
+Verifies that the bundled chart sources and packaged dependencies are present and renderable:
+
+- `charts/k3s-nvidia-edge`
+- `charts/coredns-k3s`
+- `charts/local-path-provisioner`
+- `charts/node-feature-discovery`
+- `charts/k3s-nvidia-edge/charts/gpu-operator-v26.3.3.tgz`
 
 ## print-commands
 

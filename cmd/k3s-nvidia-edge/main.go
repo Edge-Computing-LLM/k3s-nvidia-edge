@@ -23,6 +23,7 @@ Commands:
   cleanup-legacy Remove superseded NVIDIA host packages and disable GFD in GPU Operator
   uninstall       Remove GPU Operator, optionally uninstall k3s
   repos           Inventory local reference GitHub repos
+  charts          Verify bundled Helm charts are present and renderable
   print-commands  Print the exact shell commands used by install/cleanup/validate
 
 Global flags:
@@ -59,6 +60,7 @@ func main() {
 	fs.BoolVar(&opts.RequireHostCUDA, "require-host-cuda", opts.RequireHostCUDA, "require host CUDA toolkit in doctor/install")
 	fs.BoolVar(&opts.DisableGFD, "disable-gfd", true, "disable GPU Feature Discovery in GPU Operator")
 	fs.BoolVar(&opts.UninstallK3s, "k3s", false, "with uninstall: also uninstall k3s")
+	fs.BoolVar(&opts.SkipBasePackageInstall, "skip-base-package-install", false, "with install: skip base apt package setup")
 	fs.BoolVar(&opts.SkipToolkitInstall, "skip-toolkit-install", false, "with install: skip host NVIDIA Container Toolkit package setup")
 	fs.BoolVar(&opts.SkipK3sInstall, "skip-k3s-install", false, "with install: skip k3s install command")
 	fs.BoolVar(&opts.SkipGPUOperatorInstall, "skip-gpu-operator-install", false, "with install: skip GPU Operator install")
@@ -92,6 +94,8 @@ func main() {
 		err = edge.Uninstall(ctx, r, opts)
 	case "repos":
 		err = edge.Repos(ctx, r, opts)
+	case "charts":
+		err = edge.Charts(ctx, r, opts)
 	case "print-commands":
 		edge.PrintCommands(opts)
 	case "help", "-h", "--help":

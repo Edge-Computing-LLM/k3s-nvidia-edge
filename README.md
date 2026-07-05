@@ -25,6 +25,7 @@ The default profile matches the working local Xubuntu 24 setup:
 - GPU Operator `driver.enabled=false`
 - GPU Operator `toolkit.enabled=true`
 - GPU Operator `gfd.enabled=false`
+- bundled local Helm charts for GPU Operator, k3s CoreDNS, local-path-provisioner, and standalone Node Feature Discovery
 - CUDA validation with an `nvidia-smi` pod
 - optional local wrapper Helm chart at `charts/k3s-nvidia-edge`
 
@@ -59,6 +60,7 @@ make install-local
 ```bash
 bin/k3s-nvidia-edge doctor
 bin/k3s-nvidia-edge status
+bin/k3s-nvidia-edge charts
 bin/k3s-nvidia-edge repos
 bin/k3s-nvidia-edge print-commands
 ```
@@ -81,6 +83,7 @@ Important production flags:
 --operator-driver-enabled=false
 --use-local-chart=false
 --local-chart ./charts/k3s-nvidia-edge
+--skip-base-package-install=false
 ```
 
 ## End-To-End Install
@@ -106,6 +109,12 @@ To install through the bundled wrapper chart instead of installing `nvidia/gpu-o
 
 ```bash
 bin/k3s-nvidia-edge install --yes --use-local-chart
+```
+
+For an already prepared local machine where k3s, Helm, CUDA, and NVIDIA Container Toolkit are installed:
+
+```bash
+bin/k3s-nvidia-edge install --yes --sudo=false --use-local-chart --skip-base-package-install --skip-toolkit-install --skip-k3s-install
 ```
 
 ## Existing k3s Cluster Cleanup

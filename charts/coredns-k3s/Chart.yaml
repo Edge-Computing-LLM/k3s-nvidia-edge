@@ -1,0 +1,11 @@
+apiVersion: v2
+name: coredns-k3s
+description: k3s-aligned CoreDNS chart based on the bundled k3s CoreDNS manifest
+type: application
+version: 1.14.4
+appVersion: "1.14.4"
+kubeVersion: ">=1.26.0-0"
+home: https://github.com/k3s-io/k3s
+sources:
+  - https://github.com/k3s-io/k3s
+  - https://github.com/coredns/coredns

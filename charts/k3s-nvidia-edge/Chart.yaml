@@ -10,8 +10,23 @@ sources:
   - https://github.com/Edge-Computing-LLM/k3s-nvidia-edge
   - https://github.com/NVIDIA/gpu-operator
   - https://github.com/kubernetes-sigs/node-feature-discovery
+  - https://github.com/k3s-io/k3s
+  - https://github.com/rancher/local-path-provisioner
+  - https://github.com/coredns/coredns
 dependencies:
   - name: gpu-operator
     version: v26.3.3
     repository: https://helm.ngc.nvidia.com/nvidia
     condition: gpu-operator.enabled
+  - name: coredns-k3s
+    version: 1.14.4
+    repository: file://../coredns-k3s
+    condition: coredns-k3s.enabled
+  - name: local-path-provisioner
+    version: 0.0.36
+    repository: file://../local-path-provisioner
+    condition: local-path-provisioner.enabled
+  - name: node-feature-discovery
+    version: 0.2.1
+    repository: file://../node-feature-discovery
+    condition: node-feature-discovery.enabled

@@ -2,5 +2,14 @@ dependencies:
 - name: gpu-operator
   repository: https://helm.ngc.nvidia.com/nvidia
   version: v26.3.3
-digest: sha256:7ae17d7c354e49fbbea96fb2599eae7c263e9f29dcfbbe38a3b0daa38ff58772
-generated: "2026-07-01T21:20:37.72339586+05:00"
+- name: coredns-k3s
+  repository: file://../coredns-k3s
+  version: 1.14.4
+- name: local-path-provisioner
+  repository: file://../local-path-provisioner
+  version: 0.0.36
+- name: node-feature-discovery
+  repository: file://../node-feature-discovery
+  version: 0.2.1
+digest: sha256:75c5d677cde9c415178f3f4560894049666b154ffbbfab928fa3e61af402601a
+generated: "2026-07-05T11:56:18.064511529+05:00"

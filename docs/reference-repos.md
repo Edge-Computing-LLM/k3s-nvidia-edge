@@ -46,7 +46,7 @@ The local `gpu-operator` repository includes a development chart, but the workin
 
 This is safer for a workstation than installing `main-latest` development manifests from a source tree.
 
-The repository also includes `charts/k3s-nvidia-edge`, a wrapper chart that pins the released GPU Operator dependency and version-controls the k3s-specific values.
+The repository also includes `charts/k3s-nvidia-edge`, a wrapper chart that pins the released GPU Operator dependency and version-controls the k3s-specific values. Its dependency set includes local chart sources for k3s-aligned CoreDNS, local-path-provisioner, and standalone Node Feature Discovery. Those local dependencies are disabled by default because the live cluster already receives CoreDNS/local-path from k3s and NFD from the GPU Operator chart.
 
 ## Archived NVIDIA Tool Handling
 
