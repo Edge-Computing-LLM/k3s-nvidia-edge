@@ -1,6 +1,6 @@
 # Architecture
 
-`k3s-nvidia-edge` is a small orchestration CLI. It does not replace k3s, Helm, NVIDIA GPU Operator, or NVIDIA Container Toolkit. It codifies a known-good sequence for preparing a single-node Ubuntu/Xubuntu edge workstation for GPU workloads.
+`k3s-nvidia-edge` is a small orchestration CLI plus a reusable Go package. It does not replace k3s, Helm, NVIDIA GPU Operator, or NVIDIA Container Toolkit. It codifies a known-good sequence for preparing a single-node Ubuntu/Xubuntu edge workstation for GPU workloads.
 
 ## Components
 
@@ -51,13 +51,25 @@ gfd.enabled=false
 
 ## Command Model
 
-The CLI uses generated shell steps with dry-run protection:
+The reusable workflow code lives in `pkg/edgebase`; `cmd/k3s-nvidia-edge` is the command-line wrapper around that package. Other Edge-Computing-LLM repositories can import `pkg/edgebase` to reuse base-layer checks without copying shell orchestration or importing private `internal/...` packages.
+
+The CLI and package use generated shell steps with dry-run protection:
 
 - read-only commands run immediately
 - mutating commands print dry-run output unless `--yes` is passed
 - host-level commands use `sudo` by default when the current user is not root
 
 The implementation is intentionally dependency-light. Runtime commands avoid non-standard tools such as `rg`; production hosts need ordinary POSIX shell tools plus `curl`, `apt-get`, `systemctl`, `kubectl`, `helm`, and `jq`.
+
+## Public Package Boundary
+
+```text
+cmd/k3s-nvidia-edge        CLI parsing and user-facing command dispatch
+pkg/edgebase               reusable base workflows, options, runner, and shell command builders
+charts/k3s-nvidia-edge     optional local Helm wrapper for GPU Operator
+```
+
+`pkg/edgebase` is the supported import surface for sibling projects. The package currently exposes the same workflows used by the existing CLI: doctor, install, status, validate, cleanup legacy resources, uninstall, repository inventory, bundled chart checks, and print-command helpers.
 
 ## Validation Contract
 

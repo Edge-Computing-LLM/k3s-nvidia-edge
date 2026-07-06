@@ -6,6 +6,8 @@ All commands are run from the repository root after building:
 make check
 ```
 
+The CLI commands are thin wrappers over the public `pkg/edgebase` package. Sibling projects should reuse that package instead of copying command logic or importing from `internal/...`.
+
 ## doctor
 
 ```bash
@@ -138,6 +140,8 @@ bin/k3s-nvidia-edge print-commands
 ```
 
 Prints the generated install, cleanup, and validation shell commands.
+
+This is also useful for downstream CLI authors who want to show the base-layer operations that `edgebase` would execute.
 
 ## uninstall
 

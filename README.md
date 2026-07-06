@@ -1,12 +1,15 @@
 # K3S NVIDIA GPU Edge Setup
 
-`k3s-nvidia-edge` is a Go CLI and Helm profile for installing, configuring, validating, and cleaning up a local Ubuntu 22+ k3s cluster with NVIDIA GPU support and CUDA Toolkit 12.8+.
+`k3s-nvidia-edge` is a Go CLI, reusable Go package, and Helm profile for installing, configuring, validating, and cleaning up a local Ubuntu 22+ k3s cluster with NVIDIA GPU support and CUDA Toolkit 12.8+.
+
+The reusable base workflows live in `pkg/edgebase` and are imported by sibling projects such as `llm-observability-stack`. The existing `k3s-nvidia-edge` binary remains the primary CLI for operating the base layer.
 
 ## Documentation
 
 - [Installation guide](docs/installation.md)
 - [Commands](docs/commands.md)
 - [Architecture](docs/architecture.md)
+- [Reusable edgebase Go package](docs/edgebase-package.md)
 - [Production readiness](docs/production-readiness.md)
 - [Troubleshooting](docs/troubleshooting.md)
 - [Reference repository analysis](docs/reference-repos.md)
@@ -54,6 +57,16 @@ Optional local install:
 ```bash
 make install-local
 ```
+
+## Reusable Go Package
+
+Downstream projects should import:
+
+```go
+import "github.com/Edge-Computing-LLM/k3s-nvidia-edge/pkg/edgebase"
+```
+
+The package exposes `DefaultOptions`, `Runner`, and workflows such as `Doctor`, `Install`, `Status`, `Validate`, `CleanupLegacy`, and `Uninstall`. It is the supported API for reusing the base-layer logic. Do not import from `internal/...`.
 
 ## Commands
 

@@ -9,10 +9,12 @@ out/
 *.cover
 coverage.out
 coverage.html
+coverage/
 
 # Go workspace/cache files
 go.work
 go.work.sum
+.gocache/
 
 # Local runtime output
 *.log

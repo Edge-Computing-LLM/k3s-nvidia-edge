@@ -7,7 +7,7 @@ import (
 	"os"
 	"strings"
 
-	"github.com/Edge-Computing-LLM/k3s-nvidia-edge/internal/edge"
+	"github.com/Edge-Computing-LLM/k3s-nvidia-edge/pkg/edgebase"
 )
 
 const usage = `k3s-nvidia-edge is an Ubuntu 22+ CLI for local k3s + NVIDIA GPU setup.
@@ -49,7 +49,7 @@ func main() {
 
 	cmd := os.Args[1]
 	fs := flag.NewFlagSet(cmd, flag.ExitOnError)
-	opts := edge.DefaultOptions()
+	opts := edgebase.DefaultOptions()
 	fs.BoolVar(&opts.Yes, "yes", false, "execute mutating commands")
 	fs.BoolVar(&opts.Sudo, "sudo", true, "use sudo for host-level commands")
 	fs.BoolVar(&opts.Verbose, "verbose", false, "print command output while commands run")
@@ -76,28 +76,28 @@ func main() {
 	}
 
 	ctx := context.Background()
-	r := edge.NewRunner(opts)
+	r := edgebase.NewRunner(opts)
 	var err error
 
 	switch strings.ToLower(cmd) {
 	case "doctor":
-		err = edge.Doctor(ctx, r, opts)
+		err = edgebase.Doctor(ctx, r, opts)
 	case "install":
-		err = edge.Install(ctx, r, opts)
+		err = edgebase.Install(ctx, r, opts)
 	case "status":
-		err = edge.Status(ctx, r, opts)
+		err = edgebase.Status(ctx, r, opts)
 	case "validate":
-		err = edge.Validate(ctx, r, opts)
+		err = edgebase.Validate(ctx, r, opts)
 	case "cleanup-legacy":
-		err = edge.CleanupLegacy(ctx, r, opts)
+		err = edgebase.CleanupLegacy(ctx, r, opts)
 	case "uninstall":
-		err = edge.Uninstall(ctx, r, opts)
+		err = edgebase.Uninstall(ctx, r, opts)
 	case "repos":
-		err = edge.Repos(ctx, r, opts)
+		err = edgebase.Repos(ctx, r, opts)
 	case "charts":
-		err = edge.Charts(ctx, r, opts)
+		err = edgebase.Charts(ctx, r, opts)
 	case "print-commands":
-		edge.PrintCommands(opts)
+		edgebase.PrintCommands(opts)
 	case "help", "-h", "--help":
 		fmt.Print(usage)
 	default:

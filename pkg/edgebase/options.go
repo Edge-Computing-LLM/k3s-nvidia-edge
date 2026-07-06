@@ -1,4 +1,4 @@
-package edge
+package edgebase
 
 type Options struct {
 	Yes                    bool
