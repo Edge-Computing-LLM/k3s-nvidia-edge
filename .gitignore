@@ -21,14 +21,19 @@ go.work.sum
 *.tmp
 tmp/
 .cache/
+.edge-cli/
+/edge
+/k3s-nvidia-edge
 
 # Local Kubernetes and generated operational artifacts
 kubeconfig*
 *.kubeconfig
+*.kubeconfig.yaml
 *.yaml.generated
 *.manifest
 evidence/
 reports/
+validation-output/
 
 # Secrets and environment overrides
 .env

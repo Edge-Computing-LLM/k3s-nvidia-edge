@@ -1,6 +1,8 @@
 # Architecture
 
-`k3s-nvidia-edge` is a small orchestration CLI plus a reusable Go package. It does not replace k3s, Helm, NVIDIA GPU Operator, or NVIDIA Container Toolkit. It codifies a known-good sequence for preparing a single-node Ubuntu/Xubuntu edge workstation for GPU workloads.
+`k3s-nvidia-edge` is the infrastructure layer for the `Edge-Computing-LLM` platform. It provides a reusable Go package and local Helm profile for preparing a single-node Ubuntu/Xubuntu edge workstation for NVIDIA GPU workloads. It does not replace k3s, Helm, NVIDIA GPU Operator, or NVIDIA Container Toolkit.
+
+The primary operator CLI is now [`edge-cli`](https://github.com/Edge-Computing-LLM/edge-cli). This repository keeps the base-layer implementation and assets that `edge-cli` coordinates.
 
 ## Components
 
@@ -51,7 +53,9 @@ gfd.enabled=false
 
 ## Command Model
 
-The reusable workflow code lives in `pkg/edgebase`; `cmd/k3s-nvidia-edge` is the command-line wrapper around that package. Other Edge-Computing-LLM repositories can import `pkg/edgebase` to reuse base-layer checks without copying shell orchestration or importing private `internal/...` packages.
+The reusable workflow code lives in `pkg/edgebase`; `cmd/k3s-nvidia-edge` is the legacy command-line wrapper around that package. New operator workflows should use `edge-cli`, which exposes module commands such as `edge install infra` and `edge validate infra`.
+
+Other Edge-Computing-LLM repositories can import `pkg/edgebase` to reuse base-layer checks without copying shell orchestration or importing private `internal/...` packages.
 
 The CLI and package use generated shell steps with dry-run protection:
 
@@ -70,6 +74,8 @@ charts/k3s-nvidia-edge     optional local Helm wrapper for GPU Operator
 ```
 
 `pkg/edgebase` is the supported import surface for sibling projects. The package currently exposes the same workflows used by the existing CLI: doctor, install, status, validate, cleanup legacy resources, uninstall, repository inventory, bundled chart checks, and print-command helpers.
+
+`edge-cli` re-creates the operator workflow in its own Go module while preserving this repository as the infrastructure source of truth.
 
 ## Validation Contract
 

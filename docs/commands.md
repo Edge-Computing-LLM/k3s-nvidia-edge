@@ -1,12 +1,23 @@
 # Commands
 
-All commands are run from the repository root after building:
+New end-to-end operator workflows should use `edge-cli`:
+
+```bash
+edge install infra --yes
+edge validate infra
+edge status
+```
+
+The commands below remain available for compatibility and infrastructure-layer
+development. Run them from the repository root after building:
 
 ```bash
 make check
 ```
 
-The CLI commands are thin wrappers over the public `pkg/edgebase` package. Sibling projects should reuse that package instead of copying command logic or importing from `internal/...`.
+The legacy CLI commands are thin wrappers over the public `pkg/edgebase`
+package. Sibling projects should reuse that package, or use `edge-cli`, instead
+of copying command logic or importing from `internal/...`.
 
 ## doctor
 
@@ -28,6 +39,14 @@ Checks the current host and cluster:
 - GPU Operator values
 
 ## install
+
+Preferred:
+
+```bash
+edge install infra --yes
+```
+
+Legacy direct command:
 
 Dry-run:
 

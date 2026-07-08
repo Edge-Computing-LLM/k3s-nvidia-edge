@@ -1,11 +1,12 @@
 # K3S NVIDIA GPU Edge Setup
 
-`k3s-nvidia-edge` is a Go CLI, reusable Go package, and Helm profile for installing, configuring, validating, and cleaning up a local Ubuntu 22+ k3s cluster with NVIDIA GPU support and CUDA Toolkit 12.8+.
+`k3s-nvidia-edge` is a reusable Go package and Helm profile for installing, configuring, validating, and cleaning up a local Ubuntu 22+ k3s cluster with NVIDIA GPU support and CUDA Toolkit 12.8+.
 
-The reusable base workflows live in `pkg/edgebase` and are imported by sibling projects such as `llm-observability-stack`. The existing `k3s-nvidia-edge` binary remains the primary CLI for operating the base layer.
+The reusable base workflows live in `pkg/edgebase` and are imported by sibling projects such as `llm-observability-stack`. New operator workflows should use the unified organization CLI, [`edge-cli`](https://github.com/Edge-Computing-LLM/edge-cli), with commands such as `edge install infra`, `edge validate infra`, and `edge status`. The legacy `k3s-nvidia-edge` binary remains available during migration.
 
 ## Documentation
 
+- [edge-cli migration and repo role](docs/edge-cli-migration.md)
 - [Installation guide](docs/installation.md)
 - [Commands](docs/commands.md)
 - [Architecture](docs/architecture.md)
@@ -70,6 +71,17 @@ The package exposes `DefaultOptions`, `Runner`, and workflows such as `Doctor`, 
 
 ## Commands
 
+New operator workflows should normally use `edge-cli`:
+
+```bash
+edge doctor
+edge install infra --yes
+edge validate infra
+edge status
+```
+
+The legacy binary remains available for compatibility and package development:
+
 ```bash
 bin/k3s-nvidia-edge doctor
 bin/k3s-nvidia-edge status
@@ -100,6 +112,15 @@ Important production flags:
 ```
 
 ## End-To-End Install
+
+Preferred through `edge-cli`:
+
+```bash
+edge install infra --yes
+edge validate infra
+```
+
+Legacy direct command:
 
 ```bash
 bin/k3s-nvidia-edge install --yes
