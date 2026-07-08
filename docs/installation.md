@@ -20,7 +20,23 @@ The CLI also accepts systems where CUDA version metadata is available at:
 /usr/local/cuda/version.txt
 ```
 
-## Build The CLI
+## Preferred Installation Through edge-cli
+
+For normal operator workflows, install and run the unified CLI:
+
+```bash
+git clone https://github.com/Edge-Computing-LLM/edge-cli.git
+cd edge-cli
+go build -o edge ./cmd/edge
+sudo install -m 0755 edge /usr/local/bin/edge
+edge install infra --yes
+edge validate infra
+```
+
+`edge-cli` uses this repository as the infrastructure layer and keeps
+organization-wide install/status/validation commands in one place.
+
+## Build The Legacy CLI
 
 ```bash
 git clone https://github.com/Edge-Computing-LLM/k3s-nvidia-edge.git
@@ -36,6 +52,14 @@ make install-local
 
 ## Preflight
 
+Preferred:
+
+```bash
+edge doctor
+```
+
+Legacy direct command:
+
 ```bash
 bin/k3s-nvidia-edge doctor
 ```
@@ -47,6 +71,14 @@ bin/k3s-nvidia-edge install
 ```
 
 ## Install
+
+Preferred:
+
+```bash
+edge install infra --yes
+```
+
+Legacy direct command:
 
 ```bash
 bin/k3s-nvidia-edge install --yes
@@ -90,6 +122,14 @@ bin/k3s-nvidia-edge install --yes --sudo=false --use-local-chart --skip-base-pac
 ```
 
 ## Validate
+
+Preferred:
+
+```bash
+edge validate infra
+```
+
+Legacy direct command:
 
 ```bash
 bin/k3s-nvidia-edge validate --yes

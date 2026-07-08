@@ -18,7 +18,14 @@ helm upgrade --install k3s-nvidia-edge charts/k3s-nvidia-edge \
   -n gpu-operator --create-namespace --wait
 ```
 
-The CLI keeps direct upstream GPU Operator install as the default for existing clusters. Use `--use-local-chart` to install this wrapper chart:
+The preferred operator path is now:
+
+```bash
+edge install infra --yes
+```
+
+The legacy repository CLI can still install this wrapper chart with
+`--use-local-chart`:
 
 ```bash
 bin/k3s-nvidia-edge install --yes --use-local-chart

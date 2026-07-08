@@ -12,6 +12,13 @@ import (
 
 const usage = `k3s-nvidia-edge is an Ubuntu 22+ CLI for local k3s + NVIDIA GPU setup.
 
+Deprecation notice:
+  The unified organization CLI is now edge-cli:
+    https://github.com/Edge-Computing-LLM/edge-cli
+
+  Use "edge install infra", "edge validate infra", and "edge status" for new
+  workflows. This legacy command remains available during migration.
+
 Usage:
   k3s-nvidia-edge <command> [flags]
 
