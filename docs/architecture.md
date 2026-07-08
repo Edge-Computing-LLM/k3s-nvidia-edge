@@ -4,6 +4,12 @@
 
 The primary operator CLI is now [`edge-cli`](https://github.com/Edge-Computing-LLM/edge-cli). This repository keeps the base-layer implementation and assets that `edge-cli` coordinates.
 
+This repository is Layer 1 in the organization platform. It owns the NVIDIA GPU
+substrate for local k3s. Layer 2, `llm-observability-stack`, may observe DCGM
+metrics and schedule Ollama with `RuntimeClass/nvidia`, but it must not install
+GPU Operator, NVIDIA device plugin, Node Feature Discovery, or DCGM exporter in
+the main local NVIDIA path.
+
 ## Components
 
 ```text
@@ -90,3 +96,7 @@ CUDA validation pod can run nvidia-smi
 ```
 
 The validation pod is short-lived and requests exactly one GPU.
+
+A mostly empty k3s cluster is expected before this layer is installed. CoreDNS
+and local-path-provisioner remain owned by k3s; this repository adds the NVIDIA
+runtime and GPU readiness layer on top.

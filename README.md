@@ -2,7 +2,9 @@
 
 `k3s-nvidia-edge` is a reusable Go package and Helm profile for installing, configuring, validating, and cleaning up a local Ubuntu 22+ k3s cluster with NVIDIA GPU support and CUDA Toolkit 12.8+.
 
-The reusable base workflows live in `pkg/edgebase` and are imported by sibling projects such as `llm-observability-stack`. New operator workflows should use the unified organization CLI, [`edge-cli`](https://github.com/Edge-Computing-LLM/edge-cli), with commands such as `edge install infra`, `edge validate infra`, and `edge status`. The legacy `k3s-nvidia-edge` binary remains available during migration.
+The reusable base workflows live in `pkg/edgebase`. New operator workflows should use the unified organization CLI, [`edge-cli`](https://github.com/Edge-Computing-LLM/edge-cli), with commands such as `edge install infra`, `edge validate infra`, and `edge install all`. The legacy `k3s-nvidia-edge` binary remains available during migration.
+
+This is Layer 1 of the `Edge-Computing-LLM` platform. It owns the local Linux + k3s + NVIDIA substrate. `llm-observability-stack` is Layer 2 and must not install GPU Operator, NVIDIA device plugin, or DCGM exporter in the main local NVIDIA path.
 
 ## Documentation
 
@@ -10,6 +12,7 @@ The reusable base workflows live in `pkg/edgebase` and are imported by sibling p
 - [Installation guide](docs/installation.md)
 - [Commands](docs/commands.md)
 - [Architecture](docs/architecture.md)
+- [Live validation - 2026-07-08](docs/live-validation-2026-07-08.md)
 - [Reusable edgebase Go package](docs/edgebase-package.md)
 - [Production readiness](docs/production-readiness.md)
 - [Troubleshooting](docs/troubleshooting.md)
@@ -119,6 +122,12 @@ Preferred through `edge-cli`:
 edge install infra --yes
 edge validate infra
 ```
+
+This command sequence supports an otherwise empty local k3s cluster that only
+has default k3s system components such as CoreDNS and local-path-provisioner.
+After validation passes, install the LLM observability layer with
+`edge install observability --yes` or use `edge install all --yes` for the full
+ordered flow.
 
 Legacy direct command:
 
