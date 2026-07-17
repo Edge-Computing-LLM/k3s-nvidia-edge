@@ -253,6 +253,17 @@ Main tool mapping:
 | NVIDIA DRA Driver | `https://github.com/kubernetes-sigs/dra-driver-nvidia-gpu` |
 | cloudflared | `https://github.com/cloudflare/cloudflared` |
 
+## Programming language boundary
+
+Go remains the implementation language for reusable infrastructure workflows,
+typed options, dry-run enforcement, and command error handling. Helm/YAML is
+the declarative boundary for the GPU Operator profile. New Bash should be
+limited to short operator examples; durable infrastructure behavior belongs in
+`pkg/edgebase` or `edge-cli`, not a second shell implementation.
+
+See the organization
+[programming language and script boundaries](https://github.com/Edge-Computing-LLM/edge-cli/blob/main/docs/LANGUAGE-BOUNDARIES.md).
+
 ## Notes
 
 This tool assumes the NVIDIA display/compute driver is already installed on the host unless `--operator-driver-enabled=true` is explicitly passed.
