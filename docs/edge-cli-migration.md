@@ -25,6 +25,19 @@ Those responsibilities belong to:
 - `edge-cli`: unified Go CLI control plane.
 - `llm-observability-stack`: LLMOps and observability Helm layer.
 
+The required deployment order is infra first, observability second:
+
+```bash
+edge install infra --yes
+edge validate infra
+edge install observability --yes
+edge validate observability
+```
+
+`edge install all --yes` runs the same sequence. Future repositories should be
+added as later layers behind `edge-cli`, with explicit dependencies on the
+validated previous layer.
+
 ## Preferred Commands
 
 Use `edge-cli` for new operator workflows:

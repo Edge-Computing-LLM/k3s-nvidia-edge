@@ -2,7 +2,19 @@
 
 `k3s-nvidia-edge` is a reusable Go package and Helm profile for installing, configuring, validating, and cleaning up a local Ubuntu 22+ k3s cluster with NVIDIA GPU support and CUDA Toolkit 12.8+.
 
-The reusable base workflows live in `pkg/edgebase` and are imported by sibling projects such as `llm-observability-stack`. New operator workflows should use the unified organization CLI, [`edge-cli`](https://github.com/Edge-Computing-LLM/edge-cli), with commands such as `edge install infra`, `edge validate infra`, and `edge status`. The legacy `k3s-nvidia-edge` binary remains available during migration.
+The reusable base workflows live in `pkg/edgebase`. New operator workflows should use the unified organization CLI, [`edge-cli`](https://github.com/Edge-Computing-LLM/edge-cli), with commands such as `edge install infra`, `edge validate infra`, and `edge install all`. The legacy `k3s-nvidia-edge` binary remains available during migration.
+
+This is Layer 1 of the `Edge-Computing-LLM` platform. It owns the local Linux + k3s + NVIDIA substrate. `llm-observability-stack` is Layer 2 and must not install GPU Operator, NVIDIA device plugin, or DCGM exporter in the main local NVIDIA path.
+
+[`qwen-gguf-observability`](https://github.com/Edge-Computing-LLM/qwen-gguf-observability)
+may read the resulting node, RuntimeClass, and GPU-capacity status as a runtime
+evidence companion. It does not install or manage this infrastructure layer.
+
+This layer is conditional. `edge install all --accelerator auto` invokes the
+NVIDIA setup only when `nvidia-smi` confirms working host hardware. On CPU-only
+hosts, `edge-cli` installs or validates basic k3s without deploying this chart and
+then selects the CPU observability profile. Use `--accelerator nvidia` when the
+GPU layer is mandatory and fallback would hide an infrastructure problem.
 
 ## Documentation
 
@@ -10,6 +22,8 @@ The reusable base workflows live in `pkg/edgebase` and are imported by sibling p
 - [Installation guide](docs/installation.md)
 - [Commands](docs/commands.md)
 - [Architecture](docs/architecture.md)
+- [Live validation - 2026-07-08](docs/live-validation-2026-07-08.md)
+- [Live validation - 2026-07-17](docs/live-validation-2026-07-17.md)
 - [Reusable edgebase Go package](docs/edgebase-package.md)
 - [Production readiness](docs/production-readiness.md)
 - [Troubleshooting](docs/troubleshooting.md)
@@ -18,6 +32,7 @@ The reusable base workflows live in `pkg/edgebase` and are imported by sibling p
 - [Bundled Helm chart](charts/k3s-nvidia-edge/README.md)
 - [Contributing](CONTRIBUTING.md)
 - [Security](SECURITY.md)
+- [Qwen GGUF runtime evidence companion](https://github.com/Edge-Computing-LLM/qwen-gguf-observability)
 
 The default profile matches the working local Xubuntu 24 setup:
 
@@ -119,6 +134,12 @@ Preferred through `edge-cli`:
 edge install infra --yes
 edge validate infra
 ```
+
+This command sequence supports an otherwise empty local k3s cluster that only
+has default k3s system components such as CoreDNS and local-path-provisioner.
+After validation passes, install the LLM observability layer with
+`edge install observability --yes` or use `edge install all --yes` for the full
+ordered flow.
 
 Legacy direct command:
 
@@ -231,6 +252,17 @@ Main tool mapping:
 | DCGM | `https://github.com/NVIDIA/DCGM` |
 | NVIDIA DRA Driver | `https://github.com/kubernetes-sigs/dra-driver-nvidia-gpu` |
 | cloudflared | `https://github.com/cloudflare/cloudflared` |
+
+## Programming language boundary
+
+Go remains the implementation language for reusable infrastructure workflows,
+typed options, dry-run enforcement, and command error handling. Helm/YAML is
+the declarative boundary for the GPU Operator profile. New Bash should be
+limited to short operator examples; durable infrastructure behavior belongs in
+`pkg/edgebase` or `edge-cli`, not a second shell implementation.
+
+See the organization
+[programming language and script boundaries](https://github.com/Edge-Computing-LLM/edge-cli/blob/main/docs/LANGUAGE-BOUNDARIES.md).
 
 ## Notes
 

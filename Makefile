@@ -10,7 +10,7 @@ test:
 	go test ./...
 
 fmt:
-	gofmt -w ./cmd ./internal
+	gofmt -w $$(find . -name '*.go' -not -path './bin/*')
 
 vet:
 	go vet ./...

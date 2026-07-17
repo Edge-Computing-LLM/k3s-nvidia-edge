@@ -34,6 +34,8 @@ kubeconfig*
 evidence/
 reports/
 validation-output/
+local-run-output/
+*.kube-report.json
 
 # Secrets and environment overrides
 .env
