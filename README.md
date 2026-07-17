@@ -6,6 +6,10 @@ The reusable base workflows live in `pkg/edgebase`. New operator workflows shoul
 
 This is Layer 1 of the `Edge-Computing-LLM` platform. It owns the local Linux + k3s + NVIDIA substrate. `llm-observability-stack` is Layer 2 and must not install GPU Operator, NVIDIA device plugin, or DCGM exporter in the main local NVIDIA path.
 
+[`qwen-gguf-observability`](https://github.com/Edge-Computing-LLM/qwen-gguf-observability)
+may read the resulting node, RuntimeClass, and GPU-capacity status as a runtime
+evidence companion. It does not install or manage this infrastructure layer.
+
 This layer is conditional. `edge install all --accelerator auto` invokes the
 NVIDIA setup only when `nvidia-smi` confirms working host hardware. On CPU-only
 hosts, `edge-cli` installs or validates basic k3s without deploying this chart and
@@ -28,6 +32,7 @@ GPU layer is mandatory and fallback would hide an infrastructure problem.
 - [Bundled Helm chart](charts/k3s-nvidia-edge/README.md)
 - [Contributing](CONTRIBUTING.md)
 - [Security](SECURITY.md)
+- [Qwen GGUF runtime evidence companion](https://github.com/Edge-Computing-LLM/qwen-gguf-observability)
 
 The default profile matches the working local Xubuntu 24 setup:
 
