@@ -6,6 +6,12 @@ The reusable base workflows live in `pkg/edgebase`. New operator workflows shoul
 
 This is Layer 1 of the `Edge-Computing-LLM` platform. It owns the local Linux + k3s + NVIDIA substrate. `llm-observability-stack` is Layer 2 and must not install GPU Operator, NVIDIA device plugin, or DCGM exporter in the main local NVIDIA path.
 
+This layer is conditional. `edge install all --accelerator auto` invokes the
+NVIDIA setup only when `nvidia-smi` confirms working host hardware. On CPU-only
+hosts, `edge-cli` installs or validates basic k3s without deploying this chart and
+then selects the CPU observability profile. Use `--accelerator nvidia` when the
+GPU layer is mandatory and fallback would hide an infrastructure problem.
+
 ## Documentation
 
 - [edge-cli migration and repo role](docs/edge-cli-migration.md)
@@ -13,6 +19,7 @@ This is Layer 1 of the `Edge-Computing-LLM` platform. It owns the local Linux + 
 - [Commands](docs/commands.md)
 - [Architecture](docs/architecture.md)
 - [Live validation - 2026-07-08](docs/live-validation-2026-07-08.md)
+- [Live validation - 2026-07-17](docs/live-validation-2026-07-17.md)
 - [Reusable edgebase Go package](docs/edgebase-package.md)
 - [Production readiness](docs/production-readiness.md)
 - [Troubleshooting](docs/troubleshooting.md)
