@@ -24,6 +24,7 @@ GPU layer is mandatory and fallback would hide an infrastructure problem.
 - [Architecture](docs/architecture.md)
 - [Live validation - 2026-07-08](docs/live-validation-2026-07-08.md)
 - [Live validation - 2026-07-17](docs/live-validation-2026-07-17.md)
+- [Clean redeployment validation - 2026-07-18](docs/live-validation-2026-07-18.md)
 - [Reusable edgebase Go package](docs/edgebase-package.md)
 - [Production readiness](docs/production-readiness.md)
 - [Troubleshooting](docs/troubleshooting.md)
