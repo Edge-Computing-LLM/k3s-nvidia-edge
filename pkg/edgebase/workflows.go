@@ -128,7 +128,7 @@ func Uninstall(ctx context.Context, r *Runner, opts Options) error {
 
 func Repos(ctx context.Context, r *Runner, opts Options) error {
 	root := opts.ReferenceRoot
-	command := fmt.Sprintf(`for d in %s/Project-Kubernetes-Sigs/* %s/Project-CoreDNS/* %s/Project-Rancher-K3S/* %s/Project-Nvidia/* %s/Project-Cloudflare/*; do
+	command := fmt.Sprintf(`for d in %s/Project-Kubernetes-Sigs/* %s/Project-CoreDNS/* %s/Project-Rancher/* %s/Project-Nvidia/* %s/Project-Cloudflare/*; do
   [ -d "$d/.git" ] || continue
   printf 'repo: %%s\n' "$d"
   printf 'origin: '; git -C "$d" remote get-url origin || true
@@ -302,8 +302,8 @@ func CleanupLegacySteps(opts Options) []Step {
 
 func LocalRepoPaths(root string) []string {
 	return []string{
-		filepath.Join(root, "Project-Rancher-K3S", "k3s"),
-		filepath.Join(root, "Project-Rancher-K3S", "local-path-provisioner"),
+		filepath.Join(root, "Project-Rancher", "k3s"),
+		filepath.Join(root, "Project-Rancher", "local-path-provisioner"),
 		filepath.Join(root, "Project-CoreDNS", "coredns"),
 		filepath.Join(root, "Project-Kubernetes-Sigs", "node-feature-discovery"),
 		filepath.Join(root, "Project-Kubernetes-Sigs", "dra-driver-nvidia-gpu"),

@@ -25,7 +25,7 @@ type Options struct {
 func DefaultOptions() Options {
 	return Options{
 		Sudo:                   true,
-		ReferenceRoot:          "/media/waqasm86/External1/Waqas-Projects",
+		ReferenceRoot:          "/media/waqasm86/External1/Waqas-Projects/Project-Linux-Kubernetes-Nvidia",
 		GPUOperatorVersion:     "v26.3.3",
 		CUDATestImage:          "nvidia/cuda:12.8.1-base-ubuntu24.04",
 		MinCUDAVersion:         "12.8",

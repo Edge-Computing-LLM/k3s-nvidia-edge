@@ -92,6 +92,24 @@ func TestBundledChartsStepChecksAllCharts(t *testing.T) {
 	}
 }
 
+func TestReferenceRepositoryPathsMatchLocalLayout(t *testing.T) {
+	opts := DefaultOptions()
+	if !contains(opts.ReferenceRoot, "Project-Linux-Kubernetes-Nvidia") {
+		t.Fatalf("reference root does not target the project collection: %s", opts.ReferenceRoot)
+	}
+	paths := LocalRepoPaths(opts.ReferenceRoot)
+	all := ""
+	for _, path := range paths {
+		all += path + "\n"
+	}
+	if !contains(all, "/Project-Rancher/k3s") {
+		t.Fatalf("reference paths do not use Project-Rancher: %s", all)
+	}
+	if contains(all, "Project-Rancher-K3S") {
+		t.Fatalf("reference paths retain obsolete Project-Rancher-K3S layout: %s", all)
+	}
+}
+
 func TestValidateWaitsForSucceededPod(t *testing.T) {
 	manifest := CUDATestManifest(DefaultOptions().CUDATestImage)
 	if !contains(manifest, "runtimeClassName: nvidia") {

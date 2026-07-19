@@ -37,7 +37,7 @@ Global flags:
   --yes                 execute mutating commands; otherwise mutating commands are dry-run
   --sudo                use sudo for host-level commands (default true)
   --verbose             print command output while commands run
-  --reference-root DIR  root containing Project-Rancher-K3S, Project-Nvidia, etc.
+  --reference-root DIR  root containing Project-Rancher, Project-Nvidia, etc.
   --min-cuda-version    minimum host CUDA toolkit version for doctor/install
   --require-host-cuda   require host CUDA toolkit, not only driver/container CUDA
 
