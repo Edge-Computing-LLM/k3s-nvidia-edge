@@ -13,10 +13,12 @@ func Doctor(ctx context.Context, r *Runner, opts Options) error {
 		{Name: "Kernel", Command: "uname -a"},
 		{Name: "NVIDIA driver and GPU", Command: "nvidia-smi"},
 		{Name: "CUDA toolkit version", Command: HostCUDACheck(opts.MinCUDAVersion, opts.RequireHostCUDA)},
-		{Name: "Required commands", Command: "missing=0; for c in curl apt-get systemctl kubectl helm jq grep awk sort sed; do command -v $c >/dev/null && echo \"$c: $(command -v $c)\" || { echo \"$c: missing\"; missing=1; }; done; exit $missing"},
+		{Name: "Required commands", Command: "missing=0; for c in curl apt-get systemctl kubectl helm jq grep awk sort sed ip; do command -v $c >/dev/null && echo \"$c: $(command -v $c)\" || { echo \"$c: missing\"; missing=1; }; done; exit $missing"},
 		{Name: "NVIDIA host packages", Command: PackageInventoryCommand()},
 		{Name: "k3s service", Command: "systemctl is-active k3s"},
+		{Name: "k3s node address", Command: NodeAddressHealthCheck()},
 		{Name: "cluster nodes", Command: "kubectl get nodes -o wide || true"},
+		{Name: "GPU Operator health", Command: GPUOperatorHealthCheck()},
 		{Name: "GPU capacity", Command: "kubectl get nodes -o json | jq '.items[] | {name:.metadata.name, capacity_gpu:.status.capacity[\"nvidia.com/gpu\"], allocatable_gpu:.status.allocatable[\"nvidia.com/gpu\"]}' || true"},
 		{Name: "GPU Operator values", Command: "helm get values gpu-operator -n gpu-operator -o yaml || true"},
 	}
@@ -77,6 +79,15 @@ func Status(ctx context.Context, r *Runner, opts Options) error {
 }
 
 func Validate(ctx context.Context, r *Runner, opts Options) error {
+	for _, step := range []Step{
+		{Name: "k3s node address", Command: NodeAddressHealthCheck()},
+		{Name: "GPU Operator health", Command: GPUOperatorHealthCheck()},
+		{Name: "GPU capacity", Command: GPUCapacityCheck()},
+	} {
+		if err := r.Run(ctx, step); err != nil {
+			return err
+		}
+	}
 	return r.Run(ctx, Step{
 		Name:     "CUDA validation pod",
 		Mutating: true,

@@ -104,6 +104,22 @@ func TestValidateWaitsForSucceededPod(t *testing.T) {
 	}
 }
 
+func TestHealthChecksDetectStaleNetworkingAndUnreadyPods(t *testing.T) {
+	network := NodeAddressHealthCheck()
+	for _, want := range []string{"InternalIP", "ip -o -4 address show", "flannel-iface"} {
+		if !contains(network, want) {
+			t.Fatalf("node address health check missing %q", want)
+		}
+	}
+
+	operator := GPUOperatorHealthCheck()
+	for _, want := range []string{"gpu-operator", "Completed", "notready", "exit 1"} {
+		if !contains(operator, want) {
+			t.Fatalf("GPU Operator health check missing %q", want)
+		}
+	}
+}
+
 func TestCleanupStepsAvoidArchivedPackages(t *testing.T) {
 	opts := DefaultOptions()
 	all := joinStepCommands(CleanupLegacySteps(opts))

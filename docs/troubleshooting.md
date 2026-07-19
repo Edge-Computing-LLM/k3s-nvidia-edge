@@ -59,7 +59,19 @@ kubectl get endpoints kubernetes -n default -o yaml
 kubectl get node -o wide
 ```
 
-Pin `node-ip` in `/etc/rancher/k3s/config.yaml` when the machine regularly moves between interfaces.
+If the configured address or interface no longer exists, remove stale
+`node-ip` and `flannel-iface` entries so a single-interface workstation can
+auto-detect its active network again. If the pinning is intentional, update
+both values together. Then restart k3s and verify that the node InternalIP is
+assigned to a current host interface:
+
+```bash
+sudo systemctl restart k3s
+bin/k3s-nvidia-edge doctor --require-host-cuda=false
+```
+
+Do not copy an address from an old `kubectl get nodes -o wide` result back into
+the configuration; confirm it against `ip -o -4 address show` first.
 
 ## Validation Pod Stuck
 
