@@ -63,6 +63,39 @@ while true; do
 done`
 }
 
+func GPUOperatorHealthCheck() string {
+	return `set -euo pipefail
+pods="$(kubectl get pods -n gpu-operator --no-headers)"
+if [ -z "$pods" ]; then
+  echo "no GPU Operator pods found"
+  exit 1
+fi
+bad="$(printf '%s\n' "$pods" | awk '$3!="Running" && $3!="Completed" {print}')"
+notready="$(printf '%s\n' "$pods" | awk '$3=="Running" {split($2,a,"/"); if (a[1] != a[2]) print}')"
+if [ -n "$bad" ] || [ -n "$notready" ]; then
+  echo "GPU Operator has unhealthy pods"
+  [ -z "$bad" ] || printf '%s\n' "$bad"
+  [ -z "$notready" ] || printf '%s\n' "$notready"
+  exit 1
+fi
+echo "GPU Operator pods are healthy"`
+}
+
+func NodeAddressHealthCheck() string {
+	return `set -euo pipefail
+node_ip="$(kubectl get nodes -o jsonpath='{.items[0].status.addresses[?(@.type=="InternalIP")].address}')"
+if [ -z "$node_ip" ]; then
+  echo "k3s node has no InternalIP"
+  exit 1
+fi
+if ! ip -o -4 address show | awk '{split($4,a,"/"); print a[1]}' | grep -Fxq "$node_ip"; then
+  echo "k3s node InternalIP is not assigned to a current host interface"
+  echo "check node-ip and flannel-iface in /etc/rancher/k3s/config.yaml, then restart k3s"
+  exit 1
+fi
+echo "k3s node InternalIP matches a current host interface"`
+}
+
 func GPUCapacityCheck() string {
 	return `set -euo pipefail
 gpu="$(kubectl get nodes -o jsonpath='{.items[0].status.allocatable.nvidia\.com/gpu}')"

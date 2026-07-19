@@ -10,9 +10,9 @@ metrics and schedule Ollama with `RuntimeClass/nvidia`, but it must not install
 GPU Operator, NVIDIA device plugin, Node Feature Discovery, or DCGM exporter in
 the main local NVIDIA path.
 
-`qwen-gguf-observability` is not Layer 3 and owns no infrastructure. It is a
+`gguf-observability` is not Layer 3 and owns no infrastructure. It is a
 read-only evidence consumer that verifies selected outputs of Layer 1 together
-with the Qwen runtime deployed by Layer 2.
+with the selected GGUF model runtime deployed by Layer 2.
 
 ## Components
 

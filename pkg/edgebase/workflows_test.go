@@ -92,6 +92,24 @@ func TestBundledChartsStepChecksAllCharts(t *testing.T) {
 	}
 }
 
+func TestReferenceRepositoryPathsMatchLocalLayout(t *testing.T) {
+	opts := DefaultOptions()
+	if !contains(opts.ReferenceRoot, "Project-Linux-Kubernetes-Nvidia") {
+		t.Fatalf("reference root does not target the project collection: %s", opts.ReferenceRoot)
+	}
+	paths := LocalRepoPaths(opts.ReferenceRoot)
+	all := ""
+	for _, path := range paths {
+		all += path + "\n"
+	}
+	if !contains(all, "/Project-Rancher/k3s") {
+		t.Fatalf("reference paths do not use Project-Rancher: %s", all)
+	}
+	if contains(all, "Project-Rancher-K3S") {
+		t.Fatalf("reference paths retain obsolete Project-Rancher-K3S layout: %s", all)
+	}
+}
+
 func TestValidateWaitsForSucceededPod(t *testing.T) {
 	manifest := CUDATestManifest(DefaultOptions().CUDATestImage)
 	if !contains(manifest, "runtimeClassName: nvidia") {
@@ -101,6 +119,22 @@ func TestValidateWaitsForSucceededPod(t *testing.T) {
 	validate := joinStepCommands([]Step{{Command: cmd}})
 	if !contains(validate, "Succeeded") {
 		t.Fatalf("validation should wait for completion")
+	}
+}
+
+func TestHealthChecksDetectStaleNetworkingAndUnreadyPods(t *testing.T) {
+	network := NodeAddressHealthCheck()
+	for _, want := range []string{"InternalIP", "ip -o -4 address show", "flannel-iface"} {
+		if !contains(network, want) {
+			t.Fatalf("node address health check missing %q", want)
+		}
+	}
+
+	operator := GPUOperatorHealthCheck()
+	for _, want := range []string{"gpu-operator", "Completed", "notready", "exit 1"} {
+		if !contains(operator, want) {
+			t.Fatalf("GPU Operator health check missing %q", want)
+		}
 	}
 }
 
